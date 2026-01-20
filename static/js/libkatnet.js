@@ -2,7 +2,7 @@ async function initPageCustom() {
   try {
     // replace with your actual API URL
     // const response = await fetch("https://apipi.srckat.me/api/collections/config/records/prod");
-    const response = await fetch("https://mothership.srckat.me/api/v1/config");
+    const response = await fetch("https://api.miaa.dev/api/v1/config");
     const data = await response.json();
 
     // pull out the unix timestamp
