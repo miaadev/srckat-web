@@ -52,12 +52,13 @@
             </p>
         </div>
 
-        <!-- Page Views -->
+        <!-- Page Views
         <div class="bb-border abstract-div" style="padding-bottom: 2px;">
             <p class="schoolbell-regular" style="font-size: 25px; font-weight: 600; display: inline;">Page Views:&nbsp;
             </p>
             <p class="schoolbell-regular" id="pageviews" style="display: inline; font-size: 25px;">Loading...</p>
         </div>
+        -->
 
         <!-- Projects Block -->
         <div class="bb-border abstract-div" style="padding-bottom: 20px;">
@@ -163,7 +164,8 @@
             </p>
             <button id="open-draw" class="control-btn schoolbell-regular" onclick="openDraw()">Send me a drawing!</button>
             <br/>
-            <button class="control-btn schoolbell-regular" onclick="sendHeart()">Send me a heart <3</button>
+            <!--
+            <button class="control-btn schoolbell-regular" onclick="sendHeart()">Send me a heart <3</button> -->
         </div>
         
         <!-- Sent Hearts -->
@@ -255,7 +257,7 @@
         }
 
         // Comment this out when testing
-        loadPageViews();
+        // loadPageViews();
     </script>
     <script>
         const grid = document.querySelector('.grid-container');
@@ -328,6 +330,7 @@
                 .catch(err => console.error(err));
         }
 
+        
         async function getHeart() {
             fetch("https://pop.srckat.me/api/sendheart?viewonly=1", {
                 method: "GET",
@@ -340,7 +343,7 @@
                 .catch(err => console.error(err));
         }
 
-        getHeart();
+        // getHeart();
     </script>
 </body>
 <footer>
