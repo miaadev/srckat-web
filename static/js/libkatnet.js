@@ -2,7 +2,7 @@ async function initPageCustom() {
   try {
     // replace with your actual API URL
     // const response = await fetch("https://apipi.srckat.me/api/collections/config/records/prod");
-    const response = await fetch("https://api.miaa.dev/api/v1/config");
+    const response = await fetch("https://mothership-prod-hive.miaa.dev/api/website");
     const data = await response.json();
 
     // pull out the unix timestamp
@@ -21,31 +21,32 @@ async function initPageCustom() {
       age--;
     }
 
+    const pf = data.owner_profile
     //console.log(`Age: ${age}`);
-    document.getElementById("lkat-name").innerHTML = data.ownerName;
+    document.getElementById("lkat-name").innerHTML = pf.name;
     document.getElementById("lkat-age").innerHTML = age;
-    document.getElementById("lkat-pronoun").innerHTML = data.ownerPronouns;
-    document.getElementById("lkat-motd").innerHTML = data.webMotd;
-    document.getElementById("lkat-trusted").innerHTML = data.webTrusted;
-    document.getElementById("lkat-favgame").innerHTML = data.webFavGame;
-    document.getElementById("lkat-currproj").innerHTML = data.webCurrentProject;
-    document.getElementById("lkat-mood").innerHTML = data.ownerMood;
-    document.getElementById("wdraw-cooldown").innerHTML = "To prevent spam, there is a " + data.webDrawingCooldown + "-second cooldown between submissions.";
+    document.getElementById("lkat-pronoun").innerHTML = pf.pronouns;
+    document.getElementById("lkat-motd").innerHTML = pf.motd;
+    document.getElementById("lkat-trusted").innerHTML = pf.trusted;
+    document.getElementById("lkat-favgame").innerHTML = pf.fav_game;
+    document.getElementById("lkat-currproj").innerHTML = pf.current_project;
+    document.getElementById("lkat-mood").innerHTML = pf.mood;
+    document.getElementById("wdraw-cooldown").innerHTML = "To prevent spam, there is a " + data.web.feature_drawing_submission_cooldown + "-second cooldown between submissions.";
     
-    document.getElementById("webdraw-disablementnotice").innerHTML = data.webDrawingDisabledNotice;
+    document.getElementById("webdraw-disablementnotice").innerHTML = data.web.feature_drawing_disabled_notice;
 
     // dumb ad shit that never worked
-    if (data.adsEnabled) {
+    if (data.ads_enabled) {
       document.getElementById("vrservice-gadd").innerHTML = '<iframe src="https://adservice.srckat.me/ad/AD_150009112500" scrolling="no" frameborder="0" seamless style="width: 352px; padding-bottom: 10px;"></iframe>';
     }
 
-    if (data.relationship) {
+    if (pf.relationship) {
       document.getElementById("lkat-hgf").innerHTML = "Taken :3";
     } else {
       document.getElementById("lkat-hgf").innerHTML = "Single :[";
     }
 
-    if (!data.webEnableDrawing) {
+    if (!data.web.feature_drawing_enabled) {
       document.getElementById("open-draw").onclick = openDisabledPopup;
     }
   } catch (err) {
