@@ -6,10 +6,10 @@ async function initPageCustom() {
     const data = await response.json();
 
     // pull out the unix timestamp
-    const timestamp = data.ownerAgeUnix;
+    const timestamp = data.owner_profile.age_unix;
 
     // convert unix timestamp (seconds) → JS Date (ms)
-    const birthDate = new Date(timestamp * 1000);
+    const birthDate = new Date(timestamp);
     const now = new Date();
 
     // calculate age
