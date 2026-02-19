@@ -2,6 +2,7 @@ async function initPageCustom() {
   try {
     // replace with your actual API URL
     // const response = await fetch("https://apipi.srckat.me/api/collections/config/records/prod");
+    const productResp = await fetch("https://mothership-prod-hive.miaa.dev/api/product/product_244c1a7b-c9c5-459a-95cc-d953deeecd81");
     const response = await fetch("https://mothership-prod-hive.miaa.dev/api/website");
     const data = await response.json();
 
