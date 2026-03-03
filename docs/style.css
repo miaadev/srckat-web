@@ -194,7 +194,7 @@ fieldset:hover {
 }
 
 #loading-indicator p {
-  color: #61dafb;
+  color: #f09ed0;
   margin-top: 1rem;
   font-size: 1rem;
 }
@@ -204,7 +204,7 @@ fieldset:hover {
   width: 50px;
   height: 50px;
   border: 4px solid #4a4a4a;
-  border-top: 4px solid #61dafb;
+  border-top: 4px solid #f09ed0;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
