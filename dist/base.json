@@ -1,0 +1,63 @@
+{
+  "header": {
+    "name": "miaadev",
+    "tagline": "Software Developer | Open Source Enthusiast | TypeScript Lover"
+  },
+  "sections": [
+    {
+      "legend": "About",
+      "content": {
+        "type": "text",
+        "text": "Hi! I'm a developer who loves building things with code. I enjoy working with modern web technologies and contributing to open source."
+      }
+    },
+    {
+      "legend": "Skills",
+      "content": {
+        "type": "list",
+        "items": [
+          "JavaScript / TypeScript",
+          "React / Node.js",
+          "Python",
+          "Git / GitHub",
+          "CSS / HTML",
+          "REST APIs"
+        ]
+      }
+    },
+    {
+      "legend": "Projects",
+      "content": {
+        "type": "projects",
+        "projects": [
+          {
+            "title": "Personal Website",
+            "description": "A dynamic personal website built with TypeScript that fetches data from an API.",
+            "url": "https://github.com/miaadev/personal-site",
+            "tags": ["TypeScript", "HTML", "CSS"]
+          },
+          {
+            "title": "Cool API",
+            "description": "A REST API for serving dynamic content.",
+            "url": "https://github.com/miaadev/cool-api",
+            "tags": ["Node.js", "Express", "API"]
+          }
+        ]
+      }
+    },
+    {
+      "legend": "Contact",
+      "content": {
+        "type": "links",
+        "links": [
+          { "text": "GitHub", "url": "https://github.com/miaadev" },
+          { "text": "Email", "url": "mailto:your.email@example.com" },
+          { "text": "Twitter", "url": "https://twitter.com/yourusername" }
+        ]
+      }
+    }
+  ],
+  "footer": {
+    "text": "© 2026 miaadev. Built with HTML, CSS & TypeScript."
+  }
+}
