@@ -57,7 +57,7 @@ h2 {
 }
 
 h3 {
-  color: #98c379;
+  color: #f09ed0;
   margin-top: 1rem;
   margin-bottom: 0.5rem;
   font-size: 1.1rem;
@@ -86,8 +86,8 @@ a {
 }
 
 a:hover {
-  color: #98c379;
-  border-bottom-color: #98c379;
+  color: #f09ed0;
+  border-bottom-color: #f09ed0;
 }
 
 /* Code blocks */
