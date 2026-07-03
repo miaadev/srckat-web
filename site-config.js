@@ -67,9 +67,8 @@ async function resolveEndpoint() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
     try {
-        const response = await fetch(API_CONFIG.nsHost, {
-            signal: controller.signal,
-            headers: { 'Content-Type': 'application/json' }
+        const response = await fetch(API_CONFIG.nameserver, {
+            signal: controller.signal
         });
         clearTimeout(timeoutId);
         if (!response.ok) {
@@ -79,8 +78,6 @@ async function resolveEndpoint() {
         if (!data.API || typeof data.API !== 'string') {
             throw new Error('Nameserver response missing "API" key');
         }
-        
-        // Strip any trailing slash, then append the API path
         return data.API.replace(/\/$/, '') + '/api/portfolio/' + API_CONFIG.profileId;
     } catch (error) {
         clearTimeout(timeoutId);
