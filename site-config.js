@@ -67,7 +67,7 @@ async function resolveEndpoint() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
     try {
-        const response = await fetch(API_CONFIG.nameserver, {
+        const response = await fetch(API_CONFIG.nsHost, {
             signal: controller.signal
         });
         clearTimeout(timeoutId);
