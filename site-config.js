@@ -1,7 +1,11 @@
+// I hate fucking around with this. 
+// It makes me want to scream.
+
 // API Configuration
 const API_CONFIG = {
     nsHost: 'https://ns.miaa.dev',
     profileId: 'miaadev',
+    productId: 'product_5cafa9c5-b53b-439a-8639-79ed8766f5d2',
     timeout: 5000,
     retryAttempts: 2
 };
@@ -54,7 +58,7 @@ function showError(message) {
     <p>Using fallback configuration...</p>
   `;
     document.body.insertBefore(errorDiv, document.body.firstChild);
-    
+
     // Auto-hide after 5 seconds
     setTimeout(() => {
         errorDiv.classList.add('fade-out');
@@ -62,8 +66,9 @@ function showError(message) {
     }, 5000);
 }
 
-// Resolve the base URL from the nameserver
-async function resolveEndpoint() {
+// Resolve the nameserver record once, returning both the API base URL
+// and the PrimaryCDN base URL that the NS host publishes.
+async function resolveNameserverRecord() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
     try {
@@ -78,19 +83,25 @@ async function resolveEndpoint() {
         if (!data.API || typeof data.API !== 'string') {
             throw new Error('Nameserver response missing "API" key');
         }
-        return data.API.replace(/\/$/, '') + '/api/portfolio/' + API_CONFIG.profileId;
+        if (!data.PrimaryCDN || typeof data.PrimaryCDN !== 'string') {
+            throw new Error('Nameserver response missing "PrimaryCDN" key');
+        }
+        return {
+            apiBaseUrl: data.API.replace(/\/$/, ''),
+            primaryCdn: data.PrimaryCDN.replace(/\/$/, '')
+        };
     } catch (error) {
         clearTimeout(timeoutId);
         throw error;
     }
 }
 
-// Fetch configuration from API
-async function fetchConfig(attempt = 1) {
+// Fetch the product record from API_BASE_URL/api/v1/product/PRODUCT_ID
+async function fetchProduct(apiBaseUrl, attempt = 1) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
     try {
-        const endpoint = await resolveEndpoint();
+        const endpoint = `${apiBaseUrl}/api/v1/product/${encodeURIComponent(API_CONFIG.productId)}`;
         const response = await fetch(endpoint, {
             signal: controller.signal,
             headers: { 'Content-Type': 'application/json' }
@@ -100,10 +111,48 @@ async function fetchConfig(attempt = 1) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        if (!validateConfig(data)) {
+        return data;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (attempt < API_CONFIG.retryAttempts) {
+            console.warn(`Product fetch attempt ${attempt} failed, retrying...`);
+            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+            return fetchProduct(apiBaseUrl, attempt + 1);
+        }
+        throw error;
+    }
+}
+
+// Set the favicon to `${primaryCdn}/useruploads/${userUploadBlob}`
+function setFavicon(primaryCdn, userUploadBlob) {
+    if (!userUploadBlob) return;
+    const href = `${primaryCdn}/useruploads/${userUploadBlob}`;
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+    }
+    link.href = href;
+}
+
+// Fetch configuration from API (resolves NS, fetches product, sets favicon)
+async function fetchConfig(attempt = 1) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
+    try {
+        const { apiBaseUrl, primaryCdn } = await resolveNameserverRecord();
+
+        const productData = await fetchProduct(apiBaseUrl);
+
+        // Set favicon from the product's user_upload_blob key, if present
+        setFavicon(primaryCdn, productData.user_upload_blob);
+
+        clearTimeout(timeoutId);
+        if (!validateConfig(productData)) {
             throw new Error('Invalid configuration format received from API');
         }
-        return data;
+        return productData;
     } catch (error) {
         clearTimeout(timeoutId);
         if (attempt < API_CONFIG.retryAttempts) {
@@ -187,14 +236,14 @@ function renderFooter(footer) {
 }
 function renderSite(config) {
     const body = document.body;
-    
+
     // Clear existing content (except loading indicator)
     const loader = document.getElementById('loading-indicator');
     body.innerHTML = '';
     if (loader) {
         body.appendChild(loader);
     }
-    
+
     body.innerHTML += renderHeader(config.header);
     const mainContent = config.sections.map(section => renderSection(section)).join('\n');
     body.innerHTML += `<main>${mainContent}</main>`;
