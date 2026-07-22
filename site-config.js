@@ -101,7 +101,7 @@ async function fetchProduct(apiBaseUrl, attempt = 1) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
     try {
-        const endpoint = `${apiBaseUrl}/api/v1/product/${encodeURIComponent(API_CONFIG.productId)}`;
+        const endpoint = `${apiBaseUrl}/api/v1/product/${encodeURIComponent(API_CONFIG.productId)}/payload`;
         const response = await fetch(endpoint, {
             signal: controller.signal,
             headers: { 'Content-Type': 'application/json' }
