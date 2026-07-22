@@ -1,6 +1,3 @@
-// I hate fucking around with this. 
-// It makes me want to scream.
-
 // API Configuration
 const API_CONFIG = {
     nsHost: 'https://ns.miaa.dev',
@@ -96,7 +93,8 @@ async function resolveNameserverRecord() {
     }
 }
 
-// Fetch the product record from API_BASE_URL/api/v1/product/PRODUCT_ID
+// Fetch the product record (just the favicon blob) from
+// API_BASE_URL/api/v1/product/PRODUCT_ID/payload
 async function fetchProduct(apiBaseUrl, attempt = 1) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
@@ -123,6 +121,34 @@ async function fetchProduct(apiBaseUrl, attempt = 1) {
     }
 }
 
+// Fetch the portfolio config (header/sections/footer) from
+// API_BASE_URL/api/portfolio/PROFILE_ID
+async function fetchPortfolio(apiBaseUrl, attempt = 1) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
+    try {
+        const endpoint = `${apiBaseUrl}/api/v1/portfolio/${encodeURIComponent(API_CONFIG.profileId)}`;
+        const response = await fetch(endpoint, {
+            signal: controller.signal,
+            headers: { 'Content-Type': 'application/json' }
+        });
+        clearTimeout(timeoutId);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (attempt < API_CONFIG.retryAttempts) {
+            console.warn(`Portfolio fetch attempt ${attempt} failed, retrying...`);
+            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+            return fetchPortfolio(apiBaseUrl, attempt + 1);
+        }
+        throw error;
+    }
+}
+
 // Set the favicon to `${primaryCdn}/useruploads/${userUploadBlob}`
 function setFavicon(primaryCdn, userUploadBlob) {
     if (!userUploadBlob) return;
@@ -136,23 +162,34 @@ function setFavicon(primaryCdn, userUploadBlob) {
     link.href = href;
 }
 
-// Fetch configuration from API (resolves NS, fetches product, sets favicon)
+// Fetch configuration from API (resolves NS, fetches product + portfolio, sets favicon)
 async function fetchConfig(attempt = 1) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.timeout);
     try {
         const { apiBaseUrl, primaryCdn } = await resolveNameserverRecord();
 
-        const productData = await fetchProduct(apiBaseUrl);
+        // Fetch the favicon blob and the site content in parallel.
+        // The favicon fetch is best-effort: if it fails, we still want
+        // the rest of the site to render, so it's isolated from the
+        // portfolio fetch's error handling.
+        const [productResult, portfolioData] = await Promise.all([
+            fetchProduct(apiBaseUrl).catch(error => {
+                console.warn('Product (favicon) fetch failed:', error instanceof Error ? error.message : error);
+                return null;
+            }),
+            fetchPortfolio(apiBaseUrl)
+        ]);
 
-        // Set favicon from the product's user_upload_blob key, if present
-        setFavicon(primaryCdn, productData.user_upload_blob);
+        if (productResult) {
+            setFavicon(primaryCdn, productResult.user_upload_blob);
+        }
 
         clearTimeout(timeoutId);
-        if (!validateConfig(productData)) {
+        if (!validateConfig(portfolioData)) {
             throw new Error('Invalid configuration format received from API');
         }
-        return productData;
+        return portfolioData;
     } catch (error) {
         clearTimeout(timeoutId);
         if (attempt < API_CONFIG.retryAttempts) {
