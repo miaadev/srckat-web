@@ -290,3 +290,80 @@ fieldset:hover {
 .links {
   font-size: 1.1rem;
 }
+
+/* Discord Status */
+.discord-status-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: #a0a0a0;
+  background-color: #242424;
+  border: 1px solid #4a4a4a;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #747f8d; /* Default offline */
+  transition: background-color 0.3s ease;
+}
+
+/* Status Colors */
+.status-dot.online {
+  background-color: #43b581;
+  box-shadow: 0 0 5px #43b581;
+}
+
+.status-dot.idle {
+  background-color: #faa61a;
+  box-shadow: 0 0 5px #faa61a;
+}
+
+.status-dot.dnd {
+  background-color: #f04747;
+  box-shadow: 0 0 5px #f04747;
+}
+
+.status-dot.offline {
+  background-color: #747f8d;
+}
+
+/* Discord Status Text Elements */
+/* Discord Status Container */
+.discord-status-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; /* Allows contents to wrap on small screens */
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: #a0a0a0;
+  background-color: #242424;
+  border: 1px solid #4a4a4a;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  width: fit-content;
+  max-width: 100%; /* Ensures it doesn't overflow the page */
+}
+
+/* Discord Status Text Elements */
+.discord-username {
+  color: #e0e0e0;
+  font-weight: 600;
+}
+
+.status-divider {
+  color: #666;
+  margin: 0 2px;
+}
+
+.discord-activity {
+  color: #a0a0a0;
+  word-break: break-word; /* Prevents giant unbroken words from ruining the layout */
+}
